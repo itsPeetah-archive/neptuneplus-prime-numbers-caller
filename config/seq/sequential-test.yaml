@@ -51,7 +51,7 @@ spec:
     cpu: 300m
   maxResources:
     memory: 2048Mi
-    cpu: 20000m
+    cpu: 10000m
   recommenderLogic: dependencyAware
   service:
     container: prime-numbers-caller-sequential
@@ -71,7 +71,7 @@ spec:
   nodes:
     - functionName: prime-numbers-caller-sequential
       functionNamespace: openfaas-fn
-      nominalResponseTime: 100m
+      nominalResponseTime: 10m
       invocations:
         - functionName: prime-numbers-invoked-sequential
           functionNamespace: openfaas-fn
@@ -95,7 +95,7 @@ spec:
         #   edgeMultiplier: 1
     - functionName: prime-numbers-invoked-sequential
       functionNamespace: openfaas-fn
-      nominalResponseTime: 100m
+      nominalResponseTime: 90m
       invocations: []
 
 ---
@@ -152,7 +152,7 @@ spec:
     cpu: 300m
   maxResources:
     memory: 2048Mi
-    cpu: 20000m
+    cpu: 10000m
   recommenderLogic: dependencyAware
   service:
     container: prime-numbers-invoked-sequential

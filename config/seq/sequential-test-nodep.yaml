@@ -51,7 +51,7 @@ spec:
     cpu: 300m
   maxResources:
     memory: 2048Mi
-    cpu: 20000m
+    cpu: 10000m
   # recommenderLogic: fixedGain
   service:
     container: prime-numbers-caller-sequential-nodep
