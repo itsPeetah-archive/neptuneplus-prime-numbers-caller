@@ -6,26 +6,12 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 )
 
 func doRequest(endpoint string) string {
-	// transport := &http.Transport{
-	// 	DisableKeepAlives: true,
-	// }
-	// client := &http.Client{Timeout: 10 * time.Second, Transport: transport}
-	// req, err := http.NewRequest("GET", endpoint, nil)
-	// if err != nil {
-	// 	// this should not happen
-	// }
-
-	// req.Header.Add("Cache-Control", "no-cache, no-store, must-revalidate")
-	// req.Header.Add("Pragma", "no-cache")
-	// req.Header.Add("Expires", "0")
-
-	// resp, err := client.Do(req)
-
 	resp, err := http.Get(endpoint)
 
 	if err != nil {
@@ -48,14 +34,14 @@ func doRequest(endpoint string) string {
 	}
 }
 
-func buildEndpoint(baseUri string, upperBound int) (string, error) {
-	endpoint, err := url.JoinPath(baseUri, fmt.Sprintf("/prime/%d", upperBound))
+func buildEndpoint(upperBound int) (string, error) {
+	endpoint, err := url.JoinPath(PrimeNumbersURI, fmt.Sprintf("/prime/%d", upperBound))
 	return endpoint, err
 }
 
-func callSequential(count int, upperBound int) string {
+func DoSequentialCalls(count int, upperBound int) string {
 
-	endpoint, err := buildEndpoint(baseUriSequential, upperBound)
+	endpoint, err := buildEndpoint(upperBound)
 	if err != nil {
 		return fmt.Sprintf("Could not build the url: %v", err)
 	}
@@ -66,12 +52,12 @@ func callSequential(count int, upperBound int) string {
 	t1 := t0
 
 	response := ""
-	for i := 0; i < count; i++ {
+	for i := range count {
 		r := doRequest(endpoint)
 		t2 := time.Now().UnixMilli()
 		log.Printf("request no. %d (%dms)", i+1, t2-t1)
 		t1 = t2
-		response += r + "\n"
+		response += strings.Trim(r, " \n") + "\n"
 	}
 
 	log.Printf("Finished in: %dms", time.Now().UnixMilli()-t0)
@@ -79,9 +65,9 @@ func callSequential(count int, upperBound int) string {
 	return response
 }
 
-func callParallel(count int, upperBound int) string {
+func DoConcurrentCalls(count int, upperBound int) string {
 
-	endpoint, err := buildEndpoint(baseUriParallel, upperBound)
+	endpoint, err := buildEndpoint(upperBound)
 	if err != nil {
 		return fmt.Sprintf("Could not build the url: %v", err)
 	}
@@ -90,21 +76,12 @@ func callParallel(count int, upperBound int) string {
 	var wg sync.WaitGroup
 	wg.Add(count)
 
-	callFunc := func(id int) {
-		defer wg.Done()
-		t1 := time.Now().UnixMilli()
-		r := doRequest(endpoint)
-		t2 := time.Now().UnixMilli()
-		response += fmt.Sprintf("%d - %s\n", id, r)
-		log.Printf("request no. %d (%dms)", id+1, t2-t1)
-	}
-
 	log.Printf("Calling %s %d times in parallel", endpoint, count)
 
 	t0 := time.Now()
 
-	for i := 0; i < count; i++ {
-		go callFunc(i)
+	for i := range count {
+		go concurrentCall(i, endpoint, &response, &wg)
 	}
 
 	wg.Wait()
@@ -112,4 +89,13 @@ func callParallel(count int, upperBound int) string {
 	log.Printf("Finished in: %dms", time.Now().UnixMilli()-t0.UnixMilli())
 
 	return response
+}
+
+func concurrentCall(id int, endpoint string, response *string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	t1 := time.Now().UnixMilli()
+	r := doRequest(endpoint)
+	t2 := time.Now().UnixMilli()
+	*response += fmt.Sprintf("%d - %s\n", id, strings.Trim(r, " \n"))
+	log.Printf("request no. %d (%dms)", id+1, t2-t1)
 }

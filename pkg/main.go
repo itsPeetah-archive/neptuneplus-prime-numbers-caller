@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,27 +9,19 @@ import (
 )
 
 var (
-	baseUriSequential = ""
-	baseUriParallel   = ""
+	PrimeNumbersURI = ""
 )
 
 func init() {
-	seq, okSeq := getBaseUri("PRIME_NUMBERS_URL_SEQUENTIAL")
-	par, okPar := getBaseUri("PRIME_NUMBERS_URL_PARALLEL")
-
-	if !okSeq || !okPar {
-		log.Fatal("prime-numbers URI not set")
-	} else {
-		baseUriSequential = seq
-		baseUriParallel = par
-	}
-
+	uri := os.Getenv("PRIME_NUMBERS_URI")
+	flag.StringVar(&PrimeNumbersURI, "prime-numbers-uri", uri, "uri for the prime-numbers function to call")
 }
 
 func main() {
 	http.HandleFunc("/health", handleHealth)
 	http.HandleFunc("/_/ready", handleReady)
-	http.HandleFunc("/entrypoint", handlePrime)
+	http.HandleFunc("/sequential", handleSequential)
+	http.HandleFunc("/concurrent", handleConcurrent)
 
 	addr := fmt.Sprintf(":%d", 8080)
 	log.Print("prime-numbers function starting on port 8080")
@@ -48,22 +41,29 @@ func handleReady(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ready"))
 }
 
-func handlePrime(w http.ResponseWriter, r *http.Request) {
-	mode, count, upperBound := parseQuery(r)
-
-	resp := ""
-
-	switch mode {
-	case "seq":
-		resp = callSequential(count, upperBound)
-	case "par":
-		resp = callParallel(count, upperBound)
-	default:
+func handleSequential(w http.ResponseWriter, r *http.Request) {
+	count, upperBound, err := parseQuery(r)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("mode parameter missing or invalid"))
+		w.Write([]byte(err.Error()))
 		return
 	}
 
+	resp := DoSequentialCalls(count, upperBound)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(resp))
+
+}
+
+func handleConcurrent(w http.ResponseWriter, r *http.Request) {
+	count, upperBound, err := parseQuery(r)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	resp := DoConcurrentCalls(count, upperBound)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(resp))
 }

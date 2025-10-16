@@ -13,8 +13,8 @@ FROM alpine:latest AS function
 EXPOSE 8080
 WORKDIR /app
 
-ENV PRIME_NUMBERS_URL_PARALLEL="http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers-invoked-parallel/"
-ENV PRIME_NUMBERS_URL_SEQUENTIAL="http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers-invoked-sequential/"
+ARG PRIME_NUMBERS_URI=""
+ENV PRIME_NUMBERS_URI=$PRIME_NUMBERS_URI
 
 COPY --from=builder /app/bin/program .
 ENTRYPOINT ["./program"]

@@ -1,58 +1,50 @@
-IMAGE_BASE_NAME := itspeetah/np-prime-numbers-caller
-IMAGE_TAG := latest
-IMAGE_TAG_PROFILING := prof
+IMAGE_BASE_NAME = itspeetah/np-prime-numbers-caller
+IMAGE_TAG := ""
+
+BUILDX_PLATFORM = linux/amd64,linux/arm64
+PRIME_NUMBERS_URI := ""
+
+DEV_PLATFORM = linux/arm64
+DEV_PORT = 8081
+LOCAL_URI=http://host.docker.internal:8080
+CLUSTER_URI=http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers
+IMG_TAG_LOCAL=local
+IMG_TAG_CLUSTER=dev
+
+.PHONY: local cluster dev run
 
 publish: build push
-	
 
 build:
 	@echo "Building docker image..."
-	docker buildx build --platform linux/amd64,linux/arm64 --target function -t $(IMAGE_BASE_NAME):$(IMAGE_TAG) .
+	docker buildx build --platform $(BUILDX_PLATFORM) --target function -t $(IMAGE_BASE_NAME):$(IMAGE_TAG) --build-arg PRIME_NUMBERS_URI=$(PRIME_NUMBERS_URI) .
 	@echo "Done."
 
-clean:
-	@echo "Removing Docker images..."
-	if docker images -q $(IMAGE_BASE_NAME):$(IMAGE_TAG) &> /dev/null; then \
-		docker rmi $(IMAGE_BASE_NAME):$(IMAGE_TAG); \
-		echo "Removed $(IMAGE_BASE_NAME):$(IMAGE_TAG)"; \
-	else
-		echo "Image $(IMAGE_BASE_NAME):$(IMAGE_TAG) does not exist."; \
-	fi
-	@echo "Clean up complete"
+local: PRIME_NUMBERS_URI=$(LOCAL_URI)
+local: IMAGE_TAG=$(IMG_TAG_LOCAL)
+local: build
+
+cluster: PRIME_NUMBERS_URI=$(CLUSTER_URI)
+cluster: IMAGE_TAG=$(IMG_TAG_CLUSTER)
+cluster: build
 
 push:
 	@echo "Pushing Docker imgage for function prime-numbers-caller..."
 	docker image push $(IMAGE_BASE_NAME):$(IMAGE_TAG)
 	@echo "Done."
 
-deploy:
-	@echo "Deploying functions..."
-	kubectl apply -f ./config
-	@echo "Done"
+push-local: IMAGE_TAG=$(IMG_TAG_LOCAL)
+push-local: push
 
-undeploy:
-	@echo "Undeploying functions..."
-	kubectl delete -f ./config
-	@echo "Done"
+push-cluster: IMAGE_TAG=$(IMG_TAG_CLUSTER)
+push-cluster: push
 
-deploy-%:
-	@echo "Deploying functions..."
-	kubectl apply -f ./config/$*
-	@echo "Done"
+run:IMAGE_TAG=$(IMG_TAG_LOCAL)
+run:
+	docker run -d -p 8081:8080 $(IMAGE_BASE_NAME):$(IMAGE_TAG)
 
-undeploy-%:
-	@echo "Deploying functions..."
-	kubectl delete -f ./config/$*
-	@echo "Done"
+dev:BUILDX_PLATFORM=$(DEV_PLATFORM)
+dev:
+	$(MAKE) local
+	$(MAKE) run
 
-
-
-# PROFILING
-
-publish-prof: build-prof push-prof
-
-build-prof:
-	docker build --target function -t $(IMAGE_BASE_NAME):$(IMAGE_TAG_PROFILING) -f ./build-tools/Dockerfile-profiling .
-
-push-prof:
-	docker push $(IMAGE_BASE_NAME):$(IMAGE_TAG_PROFILING)
