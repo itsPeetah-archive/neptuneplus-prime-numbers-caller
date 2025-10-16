@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pnc-test-dep
+  namespace: default
+  labels:
+    app: pnc-test-dep
+spec:
+  selector:
+    matchLabels:
+      app: pnc-test-dep
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pnc-test-dep
+    spec:
+      containers:
+        - name: pnc-test-dep
+          image: itspeetah/np-prime-numbers-caller:dev
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 100Mi
+            limits:
+              cpu: 4000m
+              memory: 100Mi
+          ports:
+            - containerPort: 8080
+              name: pnc-test-dep
+      restartPolicy: Always

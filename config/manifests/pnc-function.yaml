@@ -1,0 +1,60 @@
+apiVersion: openfaas.com/v1
+kind: Function
+metadata:
+  name: pnc-nodep
+  namespace: openfaas-fn
+spec:
+  image: itspeetah/np-prime-numbers-caller:dev
+  labels:
+    com.openfaas.scale.factor: "20"
+    com.openfaas.scale.max: "100"
+    com.openfaas.scale.min: "1"
+    com.openfaas.scale.zero: "false"
+    edgeautoscaler.polimi.it/scheduler: edge-autoscaler
+  name: pnc-nodep
+  readOnlyRootFilesystem: false
+  limits:
+    cpu: "200m"
+    memory: "1000Mi"
+  requests:
+    cpu: "200m"
+    memory: "1000Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pnc-nodep
+  labels:
+    name: pnc-nodep
+  namespace: openfaas-fn
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    edgeautoscaler.polimi.it/function-name: "pnc-nodep"
+    edgeautoscaler.polimi.it/function-namespace: "openfaas-fn"
+---
+apiVersion: systemautoscaler.polimi.it/v1beta1
+kind: ServiceLevelAgreement
+metadata:
+  name: pnc-nodep
+  namespace: openfaas-fn
+spec:
+  metric:
+    responseTime: 100m
+  defaultResources:
+    cpu: "300m"
+    memory: "768Mi"
+  minResources:
+    memory: 10Mi
+    cpu: 300m
+  maxResources:
+    memory: 2048Mi
+    cpu: 20000m
+  # recommenderLogic: fixedGain
+  service:
+    container: pnc-nodep
+    selector:
+      matchLabels:
+        name: pnc-nodep
