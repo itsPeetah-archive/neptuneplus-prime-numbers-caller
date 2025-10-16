@@ -1,0 +1,4 @@
+#! /bin/sh
+
+kubectl delete -f ./bench/sequential/sla
+kubectl delete -f ./bench/sequential/manifests

@@ -1,0 +1,26 @@
+apiVersion: neptuneplus.polimi.it/v1alpha1
+kind: DependencyGraph
+metadata:
+  labels:
+    app.kubernetes.io/name: cepdag-controller
+    app.kubernetes.io/managed-by: kustomize
+  name: depdag-pnc-concurrent
+  namespace: openfaas-fn
+spec:
+  nodes:
+    - functionName: pnc-con-deps
+      functionNamespace: openfaas-fn
+      nominalLocalResponseTime: 10m
+      invocations:
+        - functionName: pnc-con-invk
+          functionNamespace: openfaas-fn
+          edgeId: 1
+          edgeMultiplier: 1
+        - functionName: pnc-con-invk
+          functionNamespace: openfaas-fn
+          edgeId: 1
+          edgeMultiplier: 1
+    - functionName: pnc-con-invk
+      functionNamespace: openfaas-fn
+      nominalLocalResponseTime: 100m
+      invocations: []

@@ -1,0 +1,36 @@
+apiVersion: openfaas.com/v1
+kind: Function
+metadata:
+  name: pnc-seq-invk
+  namespace: openfaas-fn
+spec:
+  image: itspeetah/np-prime-numbers-go:latest
+  labels:
+    com.openfaas.scale.factor: "20"
+    com.openfaas.scale.max: "100"
+    com.openfaas.scale.min: "1"
+    com.openfaas.scale.zero: "false"
+    edgeautoscaler.polimi.it/scheduler: edge-autoscaler
+  name: pnc-seq-invk
+  readOnlyRootFilesystem: false
+  limits:
+    cpu: "200m"
+    memory: "1000Mi"
+  requests:
+    cpu: "200m"
+    memory: "1000Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pnc-seq-invk
+  labels:
+    name: pnc-seq-invk
+  namespace: openfaas-fn
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    edgeautoscaler.polimi.it/function-name: "pnc-seq-invk"
+    edgeautoscaler.polimi.it/function-namespace: "openfaas-fn"
