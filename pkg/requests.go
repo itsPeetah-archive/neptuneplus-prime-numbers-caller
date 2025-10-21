@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strings"
 	"sync"
-	"time"
 )
 
 func doRequest(endpoint string) string {
@@ -46,21 +45,21 @@ func DoSequentialCalls(count int, upperBound int) string {
 		return fmt.Sprintf("Could not build the url: %v", err)
 	}
 
-	log.Printf("Calling %s %d times sequentially", endpoint, count)
+	// log.Printf("Calling %s %d times sequentially", endpoint, count)
 
-	t0 := time.Now().UnixMilli()
-	t1 := t0
+	// t0 := time.Now().UnixMilli()
+	// t1 := t0
 
 	response := ""
-	for i := range count {
+	for _ = range count {
 		r := doRequest(endpoint)
-		t2 := time.Now().UnixMilli()
-		log.Printf("request no. %d (%dms)", i+1, t2-t1)
-		t1 = t2
+		// t2 := time.Now().UnixMilli()
+		// log.Printf("request no. %d (%dms)", i+1, t2-t1)
+		// t1 = t2
 		response += strings.Trim(r, " \n") + "\n"
 	}
 
-	log.Printf("Finished in: %dms", time.Now().UnixMilli()-t0)
+	// log.Printf("Finished in: %dms", time.Now().UnixMilli()-t0)
 
 	return response
 }
@@ -76,9 +75,9 @@ func DoConcurrentCalls(count int, upperBound int) string {
 	var wg sync.WaitGroup
 	wg.Add(count)
 
-	log.Printf("Calling %s %d times in parallel", endpoint, count)
+	// log.Printf("Calling %s %d times in parallel", endpoint, count)
 
-	t0 := time.Now()
+	// t0 := time.Now()
 
 	for i := range count {
 		go concurrentCall(i, endpoint, &response, &wg)
@@ -86,16 +85,16 @@ func DoConcurrentCalls(count int, upperBound int) string {
 
 	wg.Wait()
 
-	log.Printf("Finished in: %dms", time.Now().UnixMilli()-t0.UnixMilli())
+	// log.Printf("Finished in: %dms", time.Now().UnixMilli()-t0.UnixMilli())
 
 	return response
 }
 
 func concurrentCall(id int, endpoint string, response *string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	t1 := time.Now().UnixMilli()
+	// t1 := time.Now().UnixMilli()
 	r := doRequest(endpoint)
-	t2 := time.Now().UnixMilli()
+	// t2 := time.Now().UnixMilli()
 	*response += fmt.Sprintf("%d - %s\n", id, strings.Trim(r, " \n"))
-	log.Printf("request no. %d (%dms)", id+1, t2-t1)
+	// log.Printf("request no. %d (%dms)", id+1, t2-t1)
 }

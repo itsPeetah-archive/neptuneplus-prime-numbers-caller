@@ -34,3 +34,27 @@ spec:
   selector:
     edgeautoscaler.polimi.it/function-name: "pnc-seq-invk"
     edgeautoscaler.polimi.it/function-namespace: "openfaas-fn"
+---
+apiVersion: systemautoscaler.polimi.it/v1beta1
+kind: ServiceLevelAgreement
+metadata:
+  name: pnc-seq-invk
+  namespace: openfaas-fn
+spec:
+  metric:
+    responseTime: 100m
+  defaultResources:
+    cpu: "300m"
+    memory: "768Mi"
+  minResources:
+    cpu: 300m
+    memory: 10Mi
+  maxResources:
+    cpu: 20000m
+    memory: 2048Mi
+  recommenderLogic: dependencyAware
+  service:
+    container: pnc-seq-invk
+    selector:
+      matchLabels:
+        name: pnc-seq-invk

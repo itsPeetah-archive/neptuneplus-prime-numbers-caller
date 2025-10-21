@@ -17,7 +17,7 @@ spec:
     cpu: "200m"
     memory: "1000Mi"
   requests:
-    cpu: "30m"
+    cpu: "200m"
     memory: "1000Mi"
 ---
 apiVersion: v1
@@ -34,3 +34,26 @@ spec:
   selector:
     edgeautoscaler.polimi.it/function-name: "pnc-seq-nodeps"
     edgeautoscaler.polimi.it/function-namespace: "openfaas-fn"
+---
+apiVersion: systemautoscaler.polimi.it/v1beta1
+kind: ServiceLevelAgreement
+metadata:
+  name: pnc-seq-nodeps
+  namespace: openfaas-fn
+spec:
+  metric:
+    responseTime: 120m
+  defaultResources:
+    cpu: "100m"
+    memory: "768Mi"
+  minResources:
+    cpu: 100m
+    memory: 10Mi
+  maxResources:
+    cpu: 20000m
+    memory: 2048Mi
+  service:
+    container: pnc-seq-nodeps
+    selector:
+      matchLabels:
+        name: pnc-seq-nodeps

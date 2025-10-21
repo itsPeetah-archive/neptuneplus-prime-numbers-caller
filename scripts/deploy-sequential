@@ -1,4 +1,5 @@
 #! /bin/sh
 
-kubectl apply -f ./bench/sequential/sla
-kubectl apply -f ./bench/sequential/manifests
+kubectl apply -f ./bench/sequential/sla/dep-dag.yaml
+kubectl apply -f ./bench/sequential/sla/caller-dep.yaml
+kubectl apply -f ./bench/sequential/manifests/caller-dep-fn.yaml

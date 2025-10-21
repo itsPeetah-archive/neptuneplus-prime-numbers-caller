@@ -32,12 +32,12 @@ func main() {
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
-	log.Printf("received health check request")
+	// log.Printf("received health check request")
 	w.Write([]byte("health"))
 }
 
 func handleReady(w http.ResponseWriter, r *http.Request) {
-	log.Printf("received ready check request")
+	// log.Printf("received ready check request")
 	w.Write([]byte("ready"))
 }
 
