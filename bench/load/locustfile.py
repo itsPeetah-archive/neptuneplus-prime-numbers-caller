@@ -4,7 +4,7 @@ from time import time_ns, time
 import requests
 
 
-COUNT = 5
+COUNT = 2
 
 PRIME_MIN = 20_000
 PRIME_MAX = 20_000
@@ -38,6 +38,31 @@ def on_locust_init(environment, **kw):
         txt += "\n".join(individual_requests_log)
         individual_requests_log.clear()
         return txt
+
+    @environment.web_ui.app.route("/setcount/<count>")
+    def setcount(count):
+        global COUNT
+        print("setting count to", count)
+        COUNT = count
+        return f"count is now {COUNT}\n"
+
+    @environment.web_ui.app.route("/setmaxp/<maxp>")
+    def setmaxp(maxp):
+        global PRIME_MAX
+        print("setting count to", maxp)
+        PRIME_MAX = maxp
+        return f"prime_max is now {PRIME_MAX}\n"
+
+    @environment.web_ui.app.route("/setminp/<minp>")
+    def setminp(minp):
+        global PRIME_MIN
+        print("setting count to", minp)
+        PRIME_MIN = minp
+        return f"prime_min is now {PRIME_MIN}\n"
+
+    @environment.web_ui.app.route("/getsettings")
+    def getsettings():
+        return f"settings:\n- COUNT: {COUNT}\n- PRIME_MIN: {PRIME_MIN}\n- PRIME_MAX: {PRIME_MAX}\n"
 
 
 @events.test_start.add_listener
