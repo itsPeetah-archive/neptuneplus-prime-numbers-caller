@@ -1,4 +1,0 @@
-#! /bin/sh
-
-kubectl delete -f ./bench/concurrent/sla
-kubectl delete -f ./bench/concurrent/manifests

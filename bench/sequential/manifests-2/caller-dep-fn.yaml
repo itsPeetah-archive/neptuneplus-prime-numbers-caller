@@ -1,0 +1,60 @@
+apiVersion: openfaas.com/v1
+kind: Function
+metadata:
+  name: pnc-seq-deps
+  namespace: openfaas-fn
+spec:
+  image: itspeetah/np-prime-numbers-caller:dev
+  labels:
+    com.openfaas.scale.factor: "20"
+    com.openfaas.scale.max: "100"
+    com.openfaas.scale.min: "1"
+    com.openfaas.scale.zero: "false"
+    edgeautoscaler.polimi.it/scheduler: edge-autoscaler
+  name: pnc-seq-deps
+  readOnlyRootFilesystem: false
+  limits:
+    cpu: "200m"
+    memory: "1000Mi"
+  requests:
+    cpu: "200m"
+    memory: "1000Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pnc-seq-deps
+  labels:
+    name: pnc-seq-deps
+  namespace: openfaas-fn
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    edgeautoscaler.polimi.it/function-name: "pnc-seq-deps"
+    edgeautoscaler.polimi.it/function-namespace: "openfaas-fn"
+---
+apiVersion: systemautoscaler.polimi.it/v1beta1
+kind: ServiceLevelAgreement
+metadata:
+  name: pnc-seq-deps
+  namespace: openfaas-fn
+spec:
+  metric:
+    responseTime: 17m
+  defaultResources:
+    cpu: "100m"
+    memory: "768Mi"
+  minResources:
+    cpu: 100m
+    memory: 10Mi
+  maxResources:
+    cpu: 20000m
+    memory: 2048Mi
+  recommenderLogic: dependencyAware
+  service:
+    container: pnc-seq-deps
+    selector:
+      matchLabels:
+        name: pnc-seq-deps

@@ -1,19 +1,17 @@
 IMAGE_BASE_NAME = itspeetah/np-prime-numbers-caller
-IMAGE_TAG := ""
+IMAGE_TAG := dev
 
 BUILDX_PLATFORM = linux/amd64,linux/arm64
-PRIME_NUMBERS_URI := ""
+PRIME_NUMBERS_URI := http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers-invoked
 
 DEV_PLATFORM = linux/arm64
 DEV_PORT = 8081
 LOCAL_URI=http://host.docker.internal:8080
-CLUSTER_URI=http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers
+CLUSTER_URI=http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers-invoked
 IMG_TAG_LOCAL=local
 IMG_TAG_CLUSTER=dev
 
 .PHONY: local cluster dev run
-
-publish: build push
 
 build:
 	@echo "Building docker image..."

@@ -4,7 +4,7 @@ from time import time_ns, time
 import requests
 
 
-COUNT = 2
+COUNT = 5
 
 PRIME_MIN = 20_000
 PRIME_MAX = 20_000
@@ -22,9 +22,6 @@ class PrimeNumbersEnjoter(HttpUser):
     def enjoy_prime_numbers(self):
         upperBound = randint(PRIME_MIN, PRIME_MAX)
         r = self.client.get(f"/sequential?count={COUNT}&upperBound={upperBound}")
-
-
-# --- Custom Load Shape Definition ---
 
 
 class PaddedLinearRampShape(LoadTestShape):
