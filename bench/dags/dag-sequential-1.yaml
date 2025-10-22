@@ -4,27 +4,19 @@ metadata:
   labels:
     app.kubernetes.io/name: cepdag-controller
     app.kubernetes.io/managed-by: kustomize
-  name: depdag-pnc-sequential
+  name: prime-numbers-caller-sequential
   namespace: openfaas-fn
 spec:
   nodes:
     - functionName: pnc-seq-deps
       functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 100m
+      nominalLocalResponseTime: 10m
       invocations:
         - functionName: prime-numbers-invoked-0
           functionNamespace: openfaas-fn
           edgeId: 1
           edgeMultiplier: 1
-        - functionName: prime-numbers-invoked-1
-          functionNamespace: openfaas-fn
-          edgeId: 2
-          edgeMultiplier: 1
     - functionName: prime-numbers-invoked-0
-      functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 100m
-      invocations: []
-    - functionName: prime-numbers-invoked-1
       functionNamespace: openfaas-fn
       nominalLocalResponseTime: 100m
       invocations: []

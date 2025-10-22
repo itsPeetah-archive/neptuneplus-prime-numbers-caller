@@ -52,7 +52,7 @@ spec:
   maxResources:
     cpu: 20000m
     memory: 2048Mi
-  recommenderLogic: dependencyAware
+  # recommenderLogic: dependencyAware
   service:
     container: prime-numbers-invoked-7
     selector:
