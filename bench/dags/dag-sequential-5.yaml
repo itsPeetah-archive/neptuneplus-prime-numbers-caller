@@ -8,7 +8,7 @@ metadata:
   namespace: openfaas-fn
 spec:
   nodes:
-    - functionName: pnc-seq-deps
+    - functionName: prime-numbers-caller-withdeps
       functionNamespace: openfaas-fn
       nominalLocalResponseTime: 10m
       invocations:

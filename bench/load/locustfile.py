@@ -10,11 +10,13 @@ PRIME_MIN = 20_000
 PRIME_MAX = 20_000
 
 individual_requests_log = []
+
 HOST_SERVER = "http://host.docker.internal:3000"
+FUNCTION_NAME = "prime-numbers-caller-withdeps"
 
 
 class PrimeNumbersEnjoter(HttpUser):
-    host = "http://dispatcher.default.svc.cluster.local/function/openfaas-fn/pnc-seq-nodeps"
+    host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME}"
 
     wait_time = between(0.5, 1.5)
 

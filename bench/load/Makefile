@@ -15,4 +15,4 @@ up:
 	kubectl apply -f dep.yaml
 
 down:
-	kubectl delete -f dep.yaml
+	kubectl delete -f dep.yaml --ignore-not-found=true
