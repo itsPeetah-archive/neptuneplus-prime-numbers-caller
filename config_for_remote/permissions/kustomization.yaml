@@ -1,0 +1,6 @@
+resources:
+  - community-controller.yaml
+  - dispatcher.yaml
+  - system-controller.yaml
+  - delay.yaml
+  - k3s-apiserver-clusterrole.yaml

@@ -1,0 +1,7 @@
+resources:
+  # CRDs
+  - bases/edgeautoscaler.polimi.it_communityconfigurations.yaml
+  - bases/systemautoscaler.polimi.it_podscales.yaml
+  - bases/edgeautoscaler.polimi.it_communityschedules.yaml
+  - bases/systemautoscaler.polimi.it_servicelevelagreements.yaml
+  - bases/neptuneplus.polimi.it_dependencygraphs.yaml

@@ -1,0 +1,2 @@
+resources:
+  - openfaas-fn-namespace.yaml
