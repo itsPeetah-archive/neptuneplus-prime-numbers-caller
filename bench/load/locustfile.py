@@ -3,7 +3,6 @@ from random import randint
 from time import time_ns, time
 import requests
 
-
 COUNT = 2
 
 PRIME_MIN = 10_000
@@ -14,6 +13,8 @@ individual_requests_log = []
 HOST_SERVER = "http://host.docker.internal:3000"
 FUNCTION_NAME_DEPS = "prime-numbers-caller-withdeps"
 FUNCTION_NAME_NODEPS = "prime-numbers-caller-nodeps"
+
+IS_RUNNING_TEST = False
 
 
 def get_upper_bound():
@@ -67,14 +68,14 @@ def on_locust_init(environment, **kw):
     @environment.web_ui.app.route("/setmaxp/<maxp>")
     def setmaxp(maxp):
         global PRIME_MAX
-        print("setting count to", maxp)
+        print("setting prime max to", maxp)
         PRIME_MAX = int(maxp)
         return f"prime_max is now {PRIME_MAX}\n"
 
     @environment.web_ui.app.route("/setminp/<minp>")
     def setminp(minp):
         global PRIME_MIN
-        print("setting count to", minp)
+        print("setting prime min to", minp)
         PRIME_MIN = int(minp)
         return f"prime_min is now {PRIME_MIN}\n"
 
@@ -82,16 +83,24 @@ def on_locust_init(environment, **kw):
     def getsettings():
         return f"settings:\n- COUNT: {COUNT}\n- PRIME_MIN: {PRIME_MIN}\n- PRIME_MAX: {PRIME_MAX}\n"
 
+    @environment.web_ui.app.route("/is_test_running")
+    def is_test_running():
+        return "YE" if IS_RUNNING_TEST else "NO"
+
 
 @events.test_start.add_listener
 def on_test_start(environment, **kw):
     print("test started")
+    global IS_RUNNING_TEST
+    IS_RUNNING_TEST = True
     requests.get(HOST_SERVER + "/start")
 
 
 @events.test_stop.add_listener
 def on_test_stop(environment, **kw):
     print("test stopped")
+    global IS_RUNNING_TEST
+    IS_RUNNING_TEST = False
     requests.get(HOST_SERVER + "/stop")
 
 

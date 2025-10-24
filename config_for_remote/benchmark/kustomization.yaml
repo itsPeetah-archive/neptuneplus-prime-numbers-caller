@@ -1,7 +1,0 @@
-resources:
-  - load-tester-dep.yaml
-  - dag-sequential-2.yaml
-  - prime-numbers-invoked-0.yaml
-  - prime-numbers-invoked-1.yaml
-  - caller-nodep-fn.yaml
-  - caller-dep-fn.yaml
