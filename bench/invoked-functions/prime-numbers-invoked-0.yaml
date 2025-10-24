@@ -42,15 +42,15 @@ metadata:
   namespace: openfaas-fn
 spec:
   metric:
-    responseTime: 200m
+    responseTime: 65m
   defaultResources:
-    cpu: "300m"
-    memory: "768Mi"
-  minResources:
     cpu: 300m
+    memory: 768Mi
+  minResources:
+    cpu: 150m
     memory: 10Mi
   maxResources:
-    cpu: 20000m
+    cpu: 6000m
     memory: 2048Mi
   # recommenderLogic: dependencyAware
   service:

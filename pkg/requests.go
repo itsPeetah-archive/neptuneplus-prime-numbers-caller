@@ -34,7 +34,10 @@ func doRequest(endpoint string) string {
 }
 
 func buildEndpoint(upperBound int, id int) (string, error) {
-	endpoint, err := url.JoinPath(PrimeNumbersURI, fmt.Sprintf("-%d/prime/%d", id, upperBound))
+	endpoint, err := url.JoinPath(
+		strings.Replace(PrimeNumbersURI, "INDEX", fmt.Sprintf("%d", id), 1),
+		fmt.Sprintf("/prime/%d", upperBound),
+	)
 	return endpoint, err
 }
 

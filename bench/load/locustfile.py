@@ -6,24 +6,40 @@ import requests
 
 COUNT = 2
 
-PRIME_MIN = 20_000
-PRIME_MAX = 20_000
+PRIME_MIN = 10_000
+PRIME_MAX = 50_000
 
 individual_requests_log = []
 
 HOST_SERVER = "http://host.docker.internal:3000"
-FUNCTION_NAME = "prime-numbers-caller-withdeps"
+FUNCTION_NAME_DEPS = "prime-numbers-caller-withdeps"
+FUNCTION_NAME_NODEPS = "prime-numbers-caller-nodeps"
 
 
-class PrimeNumbersEnjoter(HttpUser):
-    host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME}"
+def get_upper_bound():
+    return randint(PRIME_MIN // 1000, PRIME_MAX // 1000) * 1000
 
-    wait_time = between(0.5, 1.5)
+
+class PrimeNumbersEnjoyer_Deps(HttpUser):
+    host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME_DEPS}"
+    weight = 1
+    wait_time = between(0.1, 0.6)
 
     @task
     def enjoy_prime_numbers(self):
-        upperBound = randint(PRIME_MIN, PRIME_MAX)
+        upperBound = get_upper_bound()
         r = self.client.get(f"/sequential?count={COUNT}&upperBound={upperBound}")
+
+
+# class PrimeNumbersEnjoyer_Nodeps(HttpUser):
+#     host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME_NODEPS}"
+#     weight = 1
+#     wait_time = between(0.1, 0.6)
+
+#     @task
+#     def enjoy_prime_numbers(self):
+#         upperBound = get_upper_bound()
+#         r = self.client.get(f"/sequential?count={COUNT}&upperBound={upperBound}")
 
 
 @events.init.add_listener
@@ -45,21 +61,21 @@ def on_locust_init(environment, **kw):
     def setcount(count):
         global COUNT
         print("setting count to", count)
-        COUNT = count
+        COUNT = int(count)
         return f"count is now {COUNT}\n"
 
     @environment.web_ui.app.route("/setmaxp/<maxp>")
     def setmaxp(maxp):
         global PRIME_MAX
         print("setting count to", maxp)
-        PRIME_MAX = maxp
+        PRIME_MAX = int(maxp)
         return f"prime_max is now {PRIME_MAX}\n"
 
     @environment.web_ui.app.route("/setminp/<minp>")
     def setminp(minp):
         global PRIME_MIN
         print("setting count to", minp)
-        PRIME_MIN = minp
+        PRIME_MIN = int(minp)
         return f"prime_min is now {PRIME_MIN}\n"
 
     @environment.web_ui.app.route("/getsettings")

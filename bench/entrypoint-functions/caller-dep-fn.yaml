@@ -44,13 +44,13 @@ spec:
   metric:
     responseTime: 20m
   defaultResources:
-    cpu: "100m"
-    memory: "768Mi"
+    cpu: 300m
+    memory: 768Mi
   minResources:
-    cpu: 100m
+    cpu: 150m
     memory: 10Mi
   maxResources:
-    cpu: 20000m
+    cpu: 10000m
     memory: 2048Mi
   recommenderLogic: dependencyAware
   service:
