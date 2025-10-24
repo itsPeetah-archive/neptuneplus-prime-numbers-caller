@@ -18,7 +18,7 @@ resources:
   - deploy/timescale-db.yaml
   - deploy/example-cs.yaml
   - deploy/prime-numbers-function.yaml
-  - openfaas/openfaas-fn.yaml
+  - openfaas/openfaas-function.yaml
   - permissions/community-controller.yaml
   - permissions/dispatcher.yaml
   - permissions/system-controller.yaml
