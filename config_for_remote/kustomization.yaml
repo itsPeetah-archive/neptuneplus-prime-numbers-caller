@@ -1,0 +1,27 @@
+resources:
+  - cluster/openfaas-fn-namespace.yaml
+  - crd/bases/edgeautoscaler.polimi.it_communityconfigurations.yaml
+  - crd/bases/systemautoscaler.polimi.it_podscales.yaml
+  - crd/bases/edgeautoscaler.polimi.it_communityschedules.yaml
+  - crd/bases/systemautoscaler.polimi.it_servicelevelagreements.yaml
+  - crd/bases/neptuneplus.polimi.it_dependencygraphs.yaml
+  - deploy/allocation-algorithm.yaml
+  - deploy/metrics-exposer.yaml
+  - deploy/simple-dispatcher.yaml
+  - deploy/cpu-monitoring.yaml
+  - deploy/monitoring.yaml
+  - deploy/slpa.yaml
+  - deploy/delay.yaml
+  - deploy/pod-autoscaler.yaml
+  - deploy/system-controller.yaml
+  - deploy/dispatcher.yaml
+  - deploy/podscale-controller.yaml
+  - deploy/timescale-db.yaml
+  - deploy/example-cs.yaml
+  - deploy/prime-numbers-function.yaml
+  - openfaas/openfaas-fn.yaml
+  - permissions/community-controller.yaml
+  - permissions/dispatcher.yaml
+  - permissions/system-controller.yaml
+  - permissions/delay.yaml
+  - permissions/k3s-apiserver-clusterrole.yaml
