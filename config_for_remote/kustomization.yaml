@@ -7,7 +7,6 @@ resources:
   - crd/bases/neptuneplus.polimi.it_dependencygraphs.yaml
   - deploy/allocation-algorithm.yaml
   - deploy/metrics-exposer.yaml
-  - deploy/simple-dispatcher.yaml
   - deploy/cpu-monitoring.yaml
   - deploy/monitoring.yaml
   - deploy/slpa.yaml
@@ -25,3 +24,9 @@ resources:
   - permissions/system-controller.yaml
   - permissions/delay.yaml
   - permissions/k3s-apiserver-clusterrole.yaml
+  - benchmark/load-tester-dep.yaml
+  - benchmark/dag-sequential-2.yaml
+  - benchmark/prime-numbers-invoked-0.yaml
+  - benchmark/prime-numbers-invoked-1.yaml
+  - benchmark/caller-nodep-fn.yaml
+  - benchmark/caller-dep-fn.yaml
