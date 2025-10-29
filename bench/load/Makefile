@@ -6,7 +6,7 @@ all: build push down up
 
 # DOCKER
 build:
-	docker build -t $(IMAGE) .
+	docker buildx build --platform=linux/arm64,linux/amd64 -t $(IMAGE) .
 
 push:
 	docker push $(IMAGE)

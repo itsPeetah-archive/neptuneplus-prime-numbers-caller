@@ -3,10 +3,11 @@ from random import randint
 from time import time_ns, time
 import requests
 
+# ENDPOINT
 COUNT = 2
-
 PRIME_MIN = 10_000
 PRIME_MAX = 50_000
+CALLER_MODE = "sequential"
 
 individual_requests_log = []
 
@@ -15,13 +16,14 @@ FUNCTION_NAME_DEPS = "prime-numbers-caller-withdeps"
 FUNCTION_NAME_NODEPS = "prime-numbers-caller-nodeps"
 
 IS_RUNNING_TEST = False
+START_TEST_TIME = time()
 
 
 def get_upper_bound():
     return randint(PRIME_MIN // 1000, PRIME_MAX // 1000) * 1000
 
 
-class PrimeNumbersEnjoyer_Deps(HttpUser):
+class PrimeNumbersEnjoyer_1(HttpUser):
     host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME_DEPS}"
     weight = 1
     wait_time = between(0.1, 0.6)
@@ -29,7 +31,7 @@ class PrimeNumbersEnjoyer_Deps(HttpUser):
     @task
     def enjoy_prime_numbers(self):
         upperBound = get_upper_bound()
-        r = self.client.get(f"/sequential?count={COUNT}&upperBound={upperBound}")
+        r = self.client.get(f"/{CALLER_MODE}?count={COUNT}&upperBound={upperBound}")
 
 
 # class PrimeNumbersEnjoyer_Nodeps(HttpUser):
@@ -79,20 +81,32 @@ def on_locust_init(environment, **kw):
         PRIME_MIN = int(minp)
         return f"prime_min is now {PRIME_MIN}\n"
 
+    @environment.web_ui.app.route("/setmode/<mode>")
+    def set_caller_mode(mode):
+        global CALLER_MODE
+        print("setting caller mode to", mode)
+        CALLER_MODE = mode if mode == "concurrent" else "sequential"
+        return f"caller_mode is now {CALLER_MODE}\n"
+
     @environment.web_ui.app.route("/getsettings")
     def getsettings():
-        return f"settings:\n- COUNT: {COUNT}\n- PRIME_MIN: {PRIME_MIN}\n- PRIME_MAX: {PRIME_MAX}\n"
+        return f"settings:\n- CALLER MODE: {CALLER_MODE}\n- COUNT: {COUNT}\n- PRIME_MIN: {PRIME_MIN}\n- PRIME_MAX: {PRIME_MAX}\n"
 
     @environment.web_ui.app.route("/is_test_running")
     def is_test_running():
         return "YE" if IS_RUNNING_TEST else "NO"
 
+    @environment.web_ui.app.route("/getstarttime")
+    def getstarttime():
+        return f"{START_TEST_TIME}"
+
 
 @events.test_start.add_listener
 def on_test_start(environment, **kw):
     print("test started")
-    global IS_RUNNING_TEST
+    global IS_RUNNING_TEST, START_TEST_TIME
     IS_RUNNING_TEST = True
+    START_TEST_TIME = time()
     requests.get(HOST_SERVER + "/start")
 
 
