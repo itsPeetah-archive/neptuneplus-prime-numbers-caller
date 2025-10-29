@@ -18,19 +18,19 @@ spec:
           edgeMultiplier: 1
         - functionName: prime-numbers-invoked-1
           functionNamespace: openfaas-fn
-          edgeId: 2
+          edgeId: 1
           edgeMultiplier: 1
         - functionName: prime-numbers-invoked-2
           functionNamespace: openfaas-fn
-          edgeId: 3
+          edgeId: 1
           edgeMultiplier: 1
         - functionName: prime-numbers-invoked-3
           functionNamespace: openfaas-fn
-          edgeId: 4
+          edgeId: 1
           edgeMultiplier: 1
         - functionName: prime-numbers-invoked-4
           functionNamespace: openfaas-fn
-          edgeId: 5
+          edgeId: 1
           edgeMultiplier: 1
     - functionName: prime-numbers-invoked-0
       functionNamespace: openfaas-fn
