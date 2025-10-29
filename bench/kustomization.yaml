@@ -1,0 +1,9 @@
+resources:
+  # Dag
+  - dags/dag-sequential-2.yaml
+  # Entrypoints
+  - entrypoint-functions/caller-dep-fn.yaml
+  - entrypoint-functions/caller-nodep-fn.yaml
+  # Invoked
+  - invoked-functions/prime-numbers-invoked-0.yaml
+  - invoked-functions/prime-numbers-invoked-1.yaml
