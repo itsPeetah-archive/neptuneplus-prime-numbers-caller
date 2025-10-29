@@ -11,6 +11,7 @@ spec:
     - functionName: prime-numbers-caller-withdeps
       functionNamespace: openfaas-fn
       nominalLocalResponseTime: 10m
+      nominalResponseTime: 170m
       invocations:
         - functionName: prime-numbers-invoked-0
           functionNamespace: openfaas-fn
@@ -22,9 +23,11 @@ spec:
           edgeMultiplier: 1
     - functionName: prime-numbers-invoked-0
       functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 100m
+      nominalResponseTime: 80m
+      nominalLocalResponseTime: 80m
       invocations: []
     - functionName: prime-numbers-invoked-1
       functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 100m
+      nominalResponseTime: 80m
+      nominalLocalResponseTime: 80m
       invocations: []
