@@ -1,6 +1,6 @@
 resources:
   # Dag
-  - dags/dag-sequential-2.yaml
+  - dags/dag-concurrent-2.yaml
   # Entrypoints
   - entrypoint-functions/caller-dep-fn.yaml
   - entrypoint-functions/caller-nodep-fn.yaml

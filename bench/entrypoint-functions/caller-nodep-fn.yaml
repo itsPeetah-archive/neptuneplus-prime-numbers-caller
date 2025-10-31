@@ -42,7 +42,7 @@ metadata:
   namespace: openfaas-fn
 spec:
   metric:
-    responseTime: 375m
+    responseTime: 175m
   defaultResources:
     cpu: 300m
     memory: 768Mi

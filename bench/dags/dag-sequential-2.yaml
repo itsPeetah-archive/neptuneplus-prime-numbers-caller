@@ -10,8 +10,8 @@ spec:
   nodes:
     - functionName: prime-numbers-caller-withdeps
       functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 10m
-      nominalResponseTime: 170m
+      nominalLocalResponseTime: 15m
+      nominalResponseTime: 175m
       invocations:
         - functionName: prime-numbers-invoked-0
           functionNamespace: openfaas-fn
