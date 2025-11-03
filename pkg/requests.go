@@ -11,6 +11,7 @@ import (
 )
 
 func doRequest(endpoint string) string {
+	log.Printf("requesting %s", endpoint)
 	resp, err := http.Get(endpoint)
 
 	if err != nil {

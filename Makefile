@@ -7,9 +7,11 @@ PRIME_NUMBERS_URI := http://dispatcher.default.svc.cluster.local/function/openfa
 DEV_PLATFORM = linux/arm64
 DEV_PORT = 8081
 LOCAL_URI=http://host.docker.internal:8080
-CLUSTER_URI=http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers-invoked-INDEX
+# CLUSTER_URI=http://dispatcher.default.svc.cluster.local/function/openfaas-fn/prime-numbers-invoked-INDEX
+CLUSTER_URI=http://localhost:8000/function/openfaas-fn/prime-numbers-invoked-INDEX
 IMG_TAG_LOCAL=local
-IMG_TAG_CLUSTER=dev
+# IMG_TAG_CLUSTER=dev
+IMG_TAG_CLUSTER=fix
 
 .PHONY: local cluster dev run
 

@@ -4,7 +4,7 @@ metadata:
   name: prime-numbers-caller-withdeps
   namespace: openfaas-fn
 spec:
-  image: itspeetah/np-prime-numbers-caller:dev
+  image: itspeetah/np-prime-numbers-caller:fix
   labels:
     com.openfaas.scale.factor: "20"
     com.openfaas.scale.max: "100"
