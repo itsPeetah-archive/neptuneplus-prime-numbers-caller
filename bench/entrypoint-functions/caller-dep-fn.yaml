@@ -4,7 +4,7 @@ metadata:
   name: prime-numbers-caller-withdeps
   namespace: openfaas-fn
 spec:
-  image: itspeetah/np-prime-numbers-caller:fix
+  image: itspeetah/np-prime-numbers-caller:dev
   labels:
     com.openfaas.scale.factor: "20"
     com.openfaas.scale.max: "100"
@@ -42,7 +42,7 @@ metadata:
   namespace: openfaas-fn
 spec:
   metric:
-    responseTime: 30m
+    responseTime: 70m
   defaultResources:
     cpu: 300m
     memory: 768Mi

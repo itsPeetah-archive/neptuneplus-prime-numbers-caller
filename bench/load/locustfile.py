@@ -6,7 +6,7 @@ import requests
 # ENDPOINT
 COUNT = 2
 PRIME_MIN = 10_000
-PRIME_MAX = 50_000
+PRIME_MAX = 20_000
 CALLER_MODE = "sequential"
 
 individual_requests_log = []
@@ -26,7 +26,7 @@ def get_upper_bound():
 class PrimeNumbersEnjoyer_1(HttpUser):
     host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME_DEPS}"
     weight = 1
-    wait_time = between(0.1, 0.6)
+    wait_time = between(1.0, 1.5)
 
     @task
     def enjoy_prime_numbers(self):
