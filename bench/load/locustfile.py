@@ -18,7 +18,7 @@ FUNCTION_NAME_NODEPS = "prime-numbers-caller-nodeps"
 IS_RUNNING_TEST = False
 START_TEST_TIME = time()
 
-RANDOM_SEED = 0
+RANDOM_SEED = 1
 
 
 def get_upper_bound():
@@ -48,22 +48,28 @@ class RandomStepLoadShape(LoadTestShape):
     test_duration = 600
     min_users = 20
     max_users = 120
+    spawn_rate = 1
 
     def __init__(self):
         super().__init__()
         self.local_random = random.Random(RANDOM_SEED)
         self.last_step = None
-        self.current_user_count = self.min_users
+        self.current_user_count = 0
+        self.spawn_rate = 1
 
     def tick(self):
         run_time = self.get_run_time()
         if run_time > self.test_duration:
             return None  # End test
 
-        step = int(run_time // self.step_time)
+        if self.step_time > 0:
+            step = int(run_time // self.step_time)
+        else:
+            step = 0
 
         if step != self.last_step:
             if step == 0:
+                self.local_random = random.Random(RANDOM_SEED)
                 new_user_count = self.min_users
             else:
                 new_user_count = self.local_random.randint(
@@ -71,12 +77,12 @@ class RandomStepLoadShape(LoadTestShape):
                 )
 
             # Calculate spawn rate as the absolute delta (instant change)
-            spawn_rate = abs(new_user_count - self.current_user_count)
+            self.spawn_rate = abs(new_user_count - self.current_user_count)
 
             self.current_user_count = new_user_count
             self.last_step = step
 
-        return (self.current_user_count, spawn_rate)
+        return (self.current_user_count, self.spawn_rate)
 
 
 @events.init.add_listener
