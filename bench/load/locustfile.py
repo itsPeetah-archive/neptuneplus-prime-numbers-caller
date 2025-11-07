@@ -1,5 +1,5 @@
 from locust import HttpUser, task, between, LoadTestShape, events
-from random import randint
+import random
 from time import time_ns, time
 import requests
 
@@ -18,12 +18,14 @@ FUNCTION_NAME_NODEPS = "prime-numbers-caller-nodeps"
 IS_RUNNING_TEST = False
 START_TEST_TIME = time()
 
+RANDOM_SEED = 0
+
 
 def get_upper_bound():
-    return randint(PRIME_MIN // 1000, PRIME_MAX // 1000) * 1000
+    return random.randint(PRIME_MIN // 1000, PRIME_MAX // 1000) * 1000
 
 
-class PrimeNumbersEnjoyer_1(HttpUser):
+class PrimeNumbersEnjoyer(HttpUser):
     host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME_DEPS}"
     weight = 1
     wait_time = between(1.0, 1.5)
@@ -34,15 +36,47 @@ class PrimeNumbersEnjoyer_1(HttpUser):
         r = self.client.get(f"/{CALLER_MODE}?count={COUNT}&upperBound={upperBound}")
 
 
-# class PrimeNumbersEnjoyer_Nodeps(HttpUser):
-#     host = f"http://dispatcher.default.svc.cluster.local/function/openfaas-fn/{FUNCTION_NAME_NODEPS}"
-#     weight = 1
-#     wait_time = between(0.1, 0.6)
+class RandomStepLoadShape(LoadTestShape):
+    """
+    600-second test with 50-second random steps between 20 and 120 users.
+    First step always 20 users.
+    Changes (up or down) happen immediately at each step.
+    Uses a local random instance for isolation.
+    """
 
-#     @task
-#     def enjoy_prime_numbers(self):
-#         upperBound = get_upper_bound()
-#         r = self.client.get(f"/sequential?count={COUNT}&upperBound={upperBound}")
+    step_time = 50
+    test_duration = 600
+    min_users = 20
+    max_users = 120
+
+    def __init__(self):
+        super().__init__()
+        self.local_random = random.Random(RANDOM_SEED)
+        self.last_step = None
+        self.current_user_count = self.min_users
+
+    def tick(self):
+        run_time = self.get_run_time()
+        if run_time > self.test_duration:
+            return None  # End test
+
+        step = int(run_time // self.step_time)
+
+        if step != self.last_step:
+            if step == 0:
+                new_user_count = self.min_users
+            else:
+                new_user_count = self.local_random.randint(
+                    self.min_users, self.max_users
+                )
+
+            # Calculate spawn rate as the absolute delta (instant change)
+            spawn_rate = abs(new_user_count - self.current_user_count)
+
+            self.current_user_count = new_user_count
+            self.last_step = step
+
+        return (self.current_user_count, spawn_rate)
 
 
 @events.init.add_listener
@@ -90,7 +124,7 @@ def on_locust_init(environment, **kw):
 
     @environment.web_ui.app.route("/getsettings")
     def getsettings():
-        return f"settings:\n- CALLER MODE: {CALLER_MODE}\n- COUNT: {COUNT}\n- PRIME_MIN: {PRIME_MIN}\n- PRIME_MAX: {PRIME_MAX}\n"
+        return f"settings:\n- CALLER MODE: {CALLER_MODE}\n- COUNT: {COUNT}\n- PRIME_MIN: {PRIME_MIN}\n- PRIME_MAX: {PRIME_MAX}\n-RANDOM_SEED: {RANDOM_SEED}\n"
 
     @environment.web_ui.app.route("/is_test_running")
     def is_test_running():
@@ -99,6 +133,13 @@ def on_locust_init(environment, **kw):
     @environment.web_ui.app.route("/getstarttime")
     def getstarttime():
         return f"{START_TEST_TIME}"
+
+    @environment.web_ui.app.route("/setseed/seedp")
+    def setseed(seedp):
+        global RANDOM_SEED
+        print("setting seed min to", seedp)
+        RANDOM_SEED = int(seedp)
+        return f"random seed is now {RANDOM_SEED}\n"
 
 
 @events.test_start.add_listener
