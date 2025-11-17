@@ -22,9 +22,9 @@ spec:
           edgeMultiplier: 1
     - functionName: prime-numbers-invoked-0
       functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 30m
+      nominalLocalResponseTime: 15m
       invocations: []
     - functionName: prime-numbers-invoked-1
       functionNamespace: openfaas-fn
-      nominalLocalResponseTime: 30m
+      nominalLocalResponseTime: 15m
       invocations: []
